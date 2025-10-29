@@ -15,4 +15,6 @@ public class TenBitKey {
     public void setkey(int newValue) {
         this.key = newValue & 0x3FF; 
     }
+
+    
 }
