@@ -19,10 +19,15 @@ public class Part3_3 {
 
         String ciphertext = "";
 
-        // Read msg2.txt
+        // Read msg2.txt - read all lines and concatenate
         try {
             BufferedReader reader = new BufferedReader(new FileReader("msgs/msg2.txt"));
-            ciphertext = reader.readLine();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Remove line numbers and whitespace - extract just the binary digits
+                line = line.replaceAll("^\\s*\\d+→", "").trim();
+                ciphertext += line;
+            }
             reader.close();
         } catch (IOException e) {
             System.out.println("Error reading msg2.txt: " + e.getMessage());
@@ -54,11 +59,9 @@ public class Part3_3 {
                     int cipherValue = Integer.parseInt(block, 2);
                     int plainValue = TripleDES.Decrypt(key1, key2, cipherValue);
 
-                    // CASCII: 0-25 = A-Z, 26 = space
-                    if (plainValue >= 0 && plainValue <= 25) {
-                        decrypted += (char) ('A' + plainValue);
-                    } else if (plainValue == 26) {
-                        decrypted += ' ';
+                    // Try standard ASCII: printable characters (32-126)
+                    if (plainValue >= 32 && plainValue <= 126) {
+                        decrypted += (char) plainValue;
                     } else {
                         valid = false;
                         break;
@@ -66,19 +69,21 @@ public class Part3_3 {
                 }
 
                 if (valid) {
-                    // Check if it looks like English
+                    // Check if it looks like English text
                     String upper = decrypted.toUpperCase();
                     boolean hasCommonWords = upper.contains("THE") || upper.contains("AND") ||
                                               upper.contains("IS") || upper.contains("TO") ||
                                               upper.contains("IN") || upper.contains("OF") ||
-                                              upper.contains("WAS") || upper.contains("FOR");
+                                              upper.contains("WAS") || upper.contains("FOR") ||
+                                              upper.contains("A ") || upper.contains(" A");
 
                     int spaces = 0;
                     for (char c : decrypted.toCharArray()) {
                         if (c == ' ') spaces++;
                     }
 
-                    if (hasCommonWords && spaces > 3) {
+                    // Look for reasonable amount of spaces (at least 2% of characters)
+                    if (hasCommonWords && spaces >= decrypted.length() * 0.02) {
                         candidatesFound++;
                         System.out.println("\nCandidate #" + candidatesFound);
                         System.out.println("Key1: " + IntToBit.to10BitBinary(key1) + " (" + key1 + ")");
@@ -93,7 +98,7 @@ public class Part3_3 {
         if (candidatesFound == 0) {
             System.out.println("\n*** NO VALID KEYS FOUND ***");
             System.out.println();
-            System.out.println("Analysis: No key pair produces valid CASCII text (values 0-26).");
+            System.out.println("Analysis: No key pair produces valid ASCII text (values 32-126).");
             System.out.println("Possible reasons:");
             System.out.println("1. The message file may be corrupted or incorrect");
             System.out.println("2. A different encoding scheme was used");
@@ -108,7 +113,7 @@ public class Part3_3 {
      * Self-test: Create a known encrypted message and verify we can crack it
      */
     public static void runSelfTest() {
-        String testMessage = "HELLO WORLD";
+        String testMessage = "Hello world!";
         int secretKey1 = 0b1000101110;  // 558
         int secretKey2 = 0b0110101110;  // 430
 
@@ -117,11 +122,10 @@ public class Part3_3 {
         System.out.println("Secret key2: " + IntToBit.to10BitBinary(secretKey2) + " (" + secretKey2 + ")");
         System.out.println();
 
-        // Encrypt using CASCII
+        // Encrypt using ASCII
         String cipherBits = "";
         for (char c : testMessage.toCharArray()) {
-            int cascii = (c == ' ') ? 26 : (c - 'A');
-            int encrypted = TripleDES.Encrypt(secretKey1, secretKey2, cascii);
+            int encrypted = TripleDES.Encrypt(secretKey1, secretKey2, (int) c);
             cipherBits += IntToBit.to8BitBinary(encrypted);
         }
 
@@ -147,10 +151,8 @@ public class Part3_3 {
                     int cipherValue = Integer.parseInt(block, 2);
                     int plainValue = TripleDES.Decrypt(key1, key2, cipherValue);
 
-                    if (plainValue >= 0 && plainValue <= 25) {
-                        decrypted += (char) ('A' + plainValue);
-                    } else if (plainValue == 26) {
-                        decrypted += ' ';
+                    if (plainValue >= 32 && plainValue <= 126) {
+                        decrypted += (char) plainValue;
                     } else {
                         valid = false;
                         break;
