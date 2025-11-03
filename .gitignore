@@ -9,3 +9,6 @@
 
 # Compiled Java Classes
 *.class
+
+# Results of all decryptions
+bruteforce_*.txt

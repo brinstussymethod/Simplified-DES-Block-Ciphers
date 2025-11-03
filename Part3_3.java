@@ -1,176 +1,143 @@
-import TripleSDES.TripleDES;
-import tools.IntToBit;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import TripleDES.TripleDES;         // Required
+import java.io.BufferedWriter; // Required
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*; 
 
 public class Part3_3 {
 
+    /**
+     * Main method to run the cracker for msg2.txt
+     */
     public static void main(String[] args) {
-        /*
-        Part 3.3: The message in the file msg2.txt was encoded using TripleSDES.
-        Decrypt it, and find the two 10-bit raw keys used for its encryption.
-        */
-
-        // First, demonstrate that the cracking algorithm works with a test message
-        System.out.println("=== SELF-TEST: Verifying Triple SDES cracking works ===\n");
-        runSelfTest();
-        System.out.println("\n=== Now attempting to crack msg2.txt ===\n");
-
-        String ciphertext = "";
-
-        // Read msg2.txt - read all lines and concatenate
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("msgs/msg2.txt"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Remove line numbers and whitespace - extract just the binary digits
-                line = line.replaceAll("^\\s*\\d+→", "").trim();
-                ciphertext += line;
-            }
-            reader.close();
+            System.out.println("=== Cracking TripleDES (msg2.txt) using CASCII ===");
+            // Assumes msg2.txt is in a 'msgs' folder
+            TSDESMessage("msgs/msg2.txt");
+            System.out.println("\nDone. Check bruteforce_special_TDES.txt for promising keys.");
         } catch (IOException e) {
-            System.out.println("Error reading msg2.txt: " + e.getMessage());
-            return;
-        }
-
-        System.out.println("Ciphertext length: " + ciphertext.length() + " bits");
-        System.out.println("Number of characters: " + (ciphertext.length() / 8));
-        System.out.println();
-        System.out.println("Trying all 1,048,576 possible key combinations...");
-        System.out.println("This may take a few minutes...");
-        System.out.println();
-
-        // Brute force: try all 1024 x 1024 = 1,048,576 combinations
-        int candidatesFound = 0;
-        for (int key1 = 0; key1 < 1024; key1++) {
-            // Progress indicator
-            if (key1 % 128 == 0) {
-                System.out.println("Progress: Testing key1 = " + key1 + "/1024...");
-            }
-
-            for (int key2 = 0; key2 < 1024; key2++) {
-                String decrypted = "";
-                boolean valid = true;
-
-                // Decrypt each 8-bit block
-                for (int i = 0; i < ciphertext.length(); i += 8) {
-                    String block = ciphertext.substring(i, i + 8);
-                    int cipherValue = Integer.parseInt(block, 2);
-                    int plainValue = TripleDES.Decrypt(key1, key2, cipherValue);
-
-                    // Try standard ASCII: printable characters (32-126)
-                    if (plainValue >= 32 && plainValue <= 126) {
-                        decrypted += (char) plainValue;
-                    } else {
-                        valid = false;
-                        break;
-                    }
-                }
-
-                if (valid) {
-                    // Check if it looks like English text
-                    String upper = decrypted.toUpperCase();
-                    boolean hasCommonWords = upper.contains("THE") || upper.contains("AND") ||
-                                              upper.contains("IS") || upper.contains("TO") ||
-                                              upper.contains("IN") || upper.contains("OF") ||
-                                              upper.contains("WAS") || upper.contains("FOR") ||
-                                              upper.contains("A ") || upper.contains(" A");
-
-                    int spaces = 0;
-                    for (char c : decrypted.toCharArray()) {
-                        if (c == ' ') spaces++;
-                    }
-
-                    // Look for reasonable amount of spaces (at least 2% of characters)
-                    if (hasCommonWords && spaces >= decrypted.length() * 0.02) {
-                        candidatesFound++;
-                        System.out.println("\nCandidate #" + candidatesFound);
-                        System.out.println("Key1: " + IntToBit.to10BitBinary(key1) + " (" + key1 + ")");
-                        System.out.println("Key2: " + IntToBit.to10BitBinary(key2) + " (" + key2 + ")");
-                        System.out.println("Message: " + decrypted);
-                        System.out.println();
-                    }
-                }
-            }
-        }
-
-        if (candidatesFound == 0) {
-            System.out.println("\n*** NO VALID KEYS FOUND ***");
-            System.out.println();
-            System.out.println("Analysis: No key pair produces valid ASCII text (values 32-126).");
-            System.out.println("Possible reasons:");
-            System.out.println("1. The message file may be corrupted or incorrect");
-            System.out.println("2. A different encoding scheme was used");
-            System.out.println("3. The ciphertext may not be from Triple SDES encryption");
-            System.out.println();
-            System.out.println("Note: The Triple SDES implementation has been verified correct,");
-            System.out.println("and the cracking algorithm works as demonstrated in the self-test above.");
+            System.out.println("Error running cracker: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
-     * Self-test: Create a known encrypted message and verify we can crack it
+     * CASCII 5-bit mapping. ' ' is 0, 'A' is 1, ..., '\'' is 31.
      */
-    public static void runSelfTest() {
-        String testMessage = "Hello world!";
-        int secretKey1 = 0b1000101110;  // 558
-        int secretKey2 = 0b0110101110;  // 430
+    private static final char[] CASCII_MAP = new char[] {
+        ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+        'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+        'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+        'X', 'Y', 'Z', ',', '?', ':', '.', '\''
+    };
 
-        System.out.println("Test plaintext: " + testMessage);
-        System.out.println("Secret key1: " + IntToBit.to10BitBinary(secretKey1) + " (" + secretKey1 + ")");
-        System.out.println("Secret key2: " + IntToBit.to10BitBinary(secretKey2) + " (" + secretKey2 + ")");
-        System.out.println();
-
-        // Encrypt using ASCII
-        String cipherBits = "";
-        for (char c : testMessage.toCharArray()) {
-            int encrypted = TripleDES.Encrypt(secretKey1, secretKey2, (int) c);
-            cipherBits += IntToBit.to8BitBinary(encrypted);
-        }
-
-        System.out.println("Encrypted (first 80 bits): " + cipherBits.substring(0, Math.min(80, cipherBits.length())) + "...");
-        System.out.println();
-
-        // Now crack it (limited search for demo)
-        System.out.println("Attempting to crack (searching limited keyspace for demo)...");
-        boolean found = false;
-
-        // Search around the actual keys
-        for (int key1 = secretKey1 - 10; key1 <= secretKey1 + 10 && !found; key1++) {
-            if (key1 < 0 || key1 >= 1024) continue;
-
-            for (int key2 = secretKey2 - 10; key2 <= secretKey2 + 10 && !found; key2++) {
-                if (key2 < 0 || key2 >= 1024) continue;
-
-                String decrypted = "";
-                boolean valid = true;
-
-                for (int i = 0; i < cipherBits.length(); i += 8) {
-                    String block = cipherBits.substring(i, i + 8);
-                    int cipherValue = Integer.parseInt(block, 2);
-                    int plainValue = TripleDES.Decrypt(key1, key2, cipherValue);
-
-                    if (plainValue >= 32 && plainValue <= 126) {
-                        decrypted += (char) plainValue;
-                    } else {
-                        valid = false;
-                        break;
-                    }
-                }
-
-                if (valid && decrypted.equals(testMessage)) {
-                    System.out.println("✓ SUCCESS! Cracked the message!");
-                    System.out.println("Found key1: " + IntToBit.to10BitBinary(key1) + " (" + key1 + ")");
-                    System.out.println("Found key2: " + IntToBit.to10BitBinary(key2) + " (" + key2 + ")");
-                    System.out.println("Decrypted: " + decrypted);
-                    found = true;
+    /**
+     * Converts a string of binary bits (e.g., "1000011000...") into a
+     * CASCII string. Reads 5 bits at a time (little-endian).
+     * @param bits The string of '0's and '1's.
+     * @return The decoded CASCII string.
+     */
+    private static String casciiToString(String bits) {
+        StringBuilder sb = new StringBuilder();
+        // Loop in 5-bit chunks, automatically trims trailing bits
+        for (int i = 0; i + 5 <= bits.length(); i += 5) {
+            String chunk = bits.substring(i, i + 5);
+            int val = 0;
+            // Parse 5-bit chunk as little-endian
+            for (int k = 0; k < 5; k++) {
+                if (chunk.charAt(k) == '1') {
+                    val += (1 << k); // 1 << k is Math.pow(2, k)
                 }
             }
+            // Map val (0-31) to a character
+            sb.append(CASCII_MAP[val]);
+        }
+        return sb.toString();
+    }
+
+
+    static final HashSet<String> commonWords = new HashSet<>(Arrays.asList(
+        "THAT", "AND", "NOT", "FOR", "THE", "ALL", "CRYPTO", "OF",
+        "TO", "IN", "IS", "BE", "OR", "WAS", "FROM", "ABOUT", "WAY", "BY"
+    ));
+
+    public static void TSDESMessage(String ciphertextFile) throws IOException {
+        String cipherBits = new String(Files.readAllBytes(Paths.get(ciphertextFile)));
+        
+        // This regex cleans the file, removing line numbers, arrows, etc.
+        cipherBits = cipherBits.replaceAll("[^01]", "");
+
+        if (cipherBits.length() == 0) {
+            throw new IllegalArgumentException("Ciphertext file empty or unreadable");
+        }
+        
+        if (cipherBits.length() % 8 != 0) {
+            System.out.println("Warning: Ciphertext length is " + cipherBits.length() + ", not a multiple of 8. File may be corrupt.");
         }
 
-        if (!found) {
-            System.out.println("✗ FAILED - Algorithm error!");
+        BufferedWriter allWriter = new BufferedWriter(new FileWriter("bruteforce_TDES_all.txt"));
+        BufferedWriter specialWriter = new BufferedWriter(new FileWriter("bruteforce_special_TDES.txt"));
+
+        System.out.println("Ciphertext length: " + cipherBits.length() + " bits");
+        System.out.println("Trying all 1,048,576 key combinations...");
+        System.out.println("This will take a few minutes...");
+        
+        for(int i = 0; i < 1024; i++) {
+            String rawKey1 = String.format("%10s", Integer.toBinaryString(i)).replace(' ', '0');
+            
+            // Progress indicator
+            if (i % 64 == 0) {
+                System.out.println("Testing Key1 = " + i + "/1023...");
+            }
+
+            for(int j = 0; j < 1024; j++){
+                String rawKey2 = String.format("%10s", Integer.toBinaryString(j)).replace(' ', '0');
+                
+                // Decrypt message by 8 bit blocks 
+                StringBuilder decryptedBits = new StringBuilder(cipherBits.length());
+                for (int k = 0; k + 8 <= cipherBits.length(); k += 8) {
+                    String bitBlock = cipherBits.substring(k, k + 8);
+                    // This now calls the correct TripleDES.Decrypt(String, String, String)
+                    String plainBlock = TripleDES.Decrypt(bitBlock, rawKey1, rawKey2);
+                    decryptedBits.append(plainBlock);
+                }
+                
+                // Convert bit string to CASCII plaintext
+                String plaintext;
+                try {
+                    // The helper will handle trimming to a multiple of 5
+                    plaintext = casciiToString(decryptedBits.toString());
+                } catch (Exception e) {
+                    plaintext = "<invalid-cascii-format>";
+                }
+                
+                int previewLen = 200;
+                String preview = plaintext.length() <= previewLen ? plaintext : plaintext.substring(0, previewLen);
+                String safePreview = preview.replace("\t", " ").replace("\r", " ").replace("\n", " ");
+                allWriter.write("rawKey: 1 " +  rawKey1 + "\t" + "rawKey: 2 " + rawKey2 + "\t" + "Decrypted Message" + safePreview + "\n");
+
+                String upPlain = plaintext.toUpperCase();
+                boolean matched = false;
+                for (String cw : commonWords) {
+                    if (upPlain.contains(cw)) { 
+                        matched = true; 
+                        break; 
+                    }
+                }
+                
+                if (matched) {
+                  System.out.println("Found candidate keys: K1=" + rawKey1 + ", K2=" + rawKey2);
+                  String safeFull = plaintext.replace("\t", " ").replace("\r", " ").replace("\n", " ");
+                  specialWriter.write("RawKey1: " + rawKey1 + "\tRawKey2: " + rawKey2 + "\t" + safeFull + System.lineSeparator());
+                }
+            }
+            allWriter.flush();
+            specialWriter.flush();
         }
+        
+        allWriter.close();
+        specialWriter.close();
     }
 }

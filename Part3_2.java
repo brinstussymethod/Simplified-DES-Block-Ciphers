@@ -1,154 +1,132 @@
-import SDES.SDES;
-import tools.IntToBit;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import SDES.SDES; // This import is required
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*; 
 
 public class Part3_2 {
 
+    /**
+     * Main method to run the cracker for msg1.txt
+     */
     public static void main(String[] args) {
-        /*
-        Part 3.2: The message in the file msg1.txt was encoded using SDES.
-        Decrypt it, and find the 10-bit raw key used for its encryption.
-        */
-
-        // First, demonstrate that the cracking algorithm works with a test message
-        System.out.println("=== SELF-TEST: Verifying cracking algorithm works ===\n");
-        runSelfTest();
-        System.out.println("\n=== Now attempting to crack msg1.txt ===\n");
-
-        String ciphertext = "";
-
-        // Read msg1.txt - read all lines and concatenate
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("msgs/msg1.txt"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Remove line numbers and whitespace - extract just the binary digits
-                line = line.replaceAll("^\\s*\\d+→", "").trim();
-                ciphertext += line;
-            }
-            reader.close();
+            System.out.println("=== Cracking SDES (msg1.txt) using CASCII ===");
+            // Assumes msg1.txt is in a 'msgs' folder
+            SDESMessage("msgs/msg1.txt");
+            System.out.println("\nDone. Check bruteforce_special.txt for promising keys.");
         } catch (IOException e) {
-            System.out.println("Error reading msg1.txt: " + e.getMessage());
-            return;
-        }
-
-        System.out.println("Ciphertext length: " + ciphertext.length() + " bits");
-        System.out.println("Number of characters: " + (ciphertext.length() / 8));
-        System.out.println();
-        System.out.println("Trying all 1024 possible keys...");
-        System.out.println();
-
-        // Brute force: try all 1024 possible 10-bit keys
-        int candidatesFound = 0;
-        for (int key = 0; key < 1024; key++) {
-            String decrypted = "";
-            boolean valid = true;
-
-            // Decrypt each 8-bit block
-            for (int i = 0; i < ciphertext.length(); i += 8) {
-                String block = ciphertext.substring(i, i + 8);
-                int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
-
-                // Try standard ASCII: printable characters (32-126)
-                if (plainValue >= 32 && plainValue <= 126) {
-                    decrypted += (char) plainValue;
-                } else {
-                    valid = false;
-                    break;
-                }
-            }
-
-            if (valid) {
-                // Check if it looks like English text
-                String upper = decrypted.toUpperCase();
-                boolean hasCommonWords = upper.contains("THE") || upper.contains("AND") ||
-                                          upper.contains("IS") || upper.contains("TO") ||
-                                          upper.contains("IN") || upper.contains("OF") ||
-                                          upper.contains("WAS") || upper.contains("FOR") ||
-                                          upper.contains("A ") || upper.contains(" A");
-
-                int spaces = 0;
-                for (char c : decrypted.toCharArray()) {
-                    if (c == ' ') spaces++;
-                }
-
-                // Look for reasonable amount of spaces (at least 2% of characters)
-                if (hasCommonWords && spaces >= decrypted.length() * 0.02) {
-                    candidatesFound++;
-                    System.out.println("Candidate #" + candidatesFound);
-                    System.out.println("Key: " + IntToBit.to10BitBinary(key) + " (decimal: " + key + ")");
-                    System.out.println("Message: " + decrypted);
-                    System.out.println();
-                }
-            }
-        }
-
-        if (candidatesFound == 0) {
-            System.out.println("*** NO VALID KEYS FOUND ***");
-            System.out.println();
-            System.out.println("Analysis: No key produces valid ASCII text (values 32-126).");
-            System.out.println("Possible reasons:");
-            System.out.println("1. The message file may be corrupted or incorrect");
-            System.out.println("2. A different encoding scheme was used");
-            System.out.println("3. The ciphertext may not be from SDES encryption");
-            System.out.println();
-            System.out.println("Note: The SDES implementation has been verified correct");
-            System.out.println("using the provided test vectors, and the cracking algorithm");
-            System.out.println("works correctly as demonstrated in the self-test above.");
+            System.out.println("Error running cracker: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
-     * Self-test: Create a known encrypted message and verify we can crack it
+     * CASCII 5-bit mapping. ' ' is 0, 'A' is 1, ..., '\'' is 31.
      */
-    public static void runSelfTest() {
-        String testMessage = "The quick brown fox jumps!";
-        int secretKey = 0b0111001101;  // 461
+    private static final char[] CASCII_MAP = new char[] {
+        ' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+        'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+        'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+        'X', 'Y', 'Z', ',', '?', ':', '.', '\''
+    };
 
-        System.out.println("Test plaintext: " + testMessage);
-        System.out.println("Secret key: " + IntToBit.to10BitBinary(secretKey) + " (" + secretKey + ")");
-        System.out.println();
-
-        // Encrypt using ASCII
-        String cipherBits = "";
-        for (char c : testMessage.toCharArray()) {
-            int encrypted = SDES.Encrypt(secretKey, (int) c);
-            cipherBits += IntToBit.to8BitBinary(encrypted);
-        }
-
-        System.out.println("Encrypted (first 80 bits): " + cipherBits.substring(0, Math.min(80, cipherBits.length())) + "...");
-        System.out.println();
-
-        // Now crack it
-        System.out.println("Attempting to crack...");
-        for (int key = 0; key < 1024; key++) {
-            String decrypted = "";
-            boolean valid = true;
-
-            for (int i = 0; i < cipherBits.length(); i += 8) {
-                String block = cipherBits.substring(i, i + 8);
-                int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
-
-                if (plainValue >= 32 && plainValue <= 126) {
-                    decrypted += (char) plainValue;
-                } else {
-                    valid = false;
-                    break;
+    /**
+     * Converts a string of binary bits (e.g., "1000011000...") into a
+     * CASCII string. Reads 5 bits at a time (little-endian).
+     * @param bits The string of '0's and '1's.
+     * @return The decoded CASCII string.
+     */
+    private static String casciiToString(String bits) {
+        StringBuilder sb = new StringBuilder();
+        // Loop in 5-bit chunks, automatically trims trailing bits
+        for (int i = 0; i + 5 <= bits.length(); i += 5) {
+            String chunk = bits.substring(i, i + 5);
+            int val = 0;
+            // Parse 5-bit chunk as little-endian
+            for (int k = 0; k < 5; k++) {
+                if (chunk.charAt(k) == '1') {
+                    val += (1 << k); // 1 << k is Math.pow(2, k)
                 }
             }
+            // Map val (0-31) to a character
+            sb.append(CASCII_MAP[val]);
+        }
+        return sb.toString();
+    }
 
-            if (valid && decrypted.equals(testMessage)) {
-                System.out.println("✓ SUCCESS! Cracked the message!");
-                System.out.println("Found key: " + IntToBit.to10BitBinary(key) + " (" + key + ")");
-                System.out.println("Decrypted: " + decrypted);
-                return;
-            }
+
+    static final HashSet<String> commonWords = new HashSet<>(Arrays.asList(
+        "THAT", "AND", "NOT", "FOR", "THE", "ALL", "CRYPTO", "OF",
+        "TO", "IN", "IS", "BE", "OR", "EE", "TT", "SS", "WAS", "LL"
+    ));
+
+    public static void SDESMessage(String ciphertextFile) throws IOException {
+        String cipherBits = new String(Files.readAllBytes(Paths.get(ciphertextFile)));
+        
+        // This regex cleans the file, removing line numbers, arrows, etc.
+        cipherBits = cipherBits.replaceAll("[^01]", "");
+
+        if (cipherBits.length() == 0) {
+            throw new IllegalArgumentException("Ciphertext file empty or unreadable");
+        }
+        
+        if (cipherBits.length() % 8 != 0) {
+            System.out.println("Warning: Ciphertext length is " + cipherBits.length() + ", not a multiple of 8. File may be corrupt.");
         }
 
-        System.out.println("✗ FAILED - Algorithm error!");
+        BufferedWriter allWriter = new BufferedWriter(new FileWriter("bruteforce_all.txt"));
+        BufferedWriter specialWriter = new BufferedWriter(new FileWriter("bruteforce_special.txt"));
+
+        System.out.println("Ciphertext length: " + cipherBits.length() + " bits");
+        System.out.println("Trying all 1024 keys...");
+
+        for(int i = 0; i < 1024; i++) {
+            String rawKey = String.format("%10s", Integer.toBinaryString(i)).replace(' ', '0');
+            
+            // Decrypt whole message by 8 bit blocks.
+            StringBuilder decryptedBits = new StringBuilder(cipherBits.length());
+            for (int j = 0; j + 8 <= cipherBits.length(); j += 8) {
+                String bitBlock = cipherBits.substring(j, j + 8);
+                // This now calls the correct SDES.Decrypt(String, String)
+                String plainBlock = SDES.Decrypt(bitBlock, rawKey);
+                decryptedBits.append(plainBlock);
+            }
+
+            // Convert bit string to CASCII plaintext
+            String plaintext;
+            try {
+                // The helper will handle trimming to a multiple of 5
+                plaintext = casciiToString(decryptedBits.toString());
+            } catch (Exception e) {
+                plaintext = "<invalid-cascii-format>";
+            }
+
+            int previewLen = 200;
+            String preview = plaintext.length() <= previewLen ? plaintext : plaintext.substring(0, previewLen);
+            String safePreview = preview.replace("\t", " ").replace("\r", " ").replace("\n", " ");
+
+            allWriter.write(rawKey + "\t" + safePreview + "\n");
+
+            String upPlain = plaintext.toUpperCase();
+            boolean matched = false;
+            for (String cw : commonWords) {
+              if (upPlain.contains(cw)) { 
+                  matched = true; 
+                  break; 
+              }
+            }
+
+            if (matched) {
+                System.out.println("Found candidate key: " + rawKey);
+                String safeFull = plaintext.replace("\t", " ").replace("\r", " ").replace("\n", " ");
+                specialWriter.write(rawKey + "\t" + safeFull + "\n");
+            }
+        }
+        
+        allWriter.close();
+        specialWriter.close();
     }
 }
