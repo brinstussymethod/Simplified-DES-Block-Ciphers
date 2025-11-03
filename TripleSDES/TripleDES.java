@@ -40,27 +40,29 @@ public class TripleDES {
         System.out.println("TripleSDES Problems:");
 
         int c1 = Encrypt(0b0000000000, 0b0000000000, 0b00000000);
-        System.out.println(IntToBit.to8BitBinary(c1));
+        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c1));
 
         int c2 = Encrypt(0b1000101110, 0b0110101110, 0b11010111);
-        System.out.println(IntToBit.to8BitBinary(c2));
+        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c2));
 
         int c3 = Encrypt(0b1000101110, 0b0110101110, 0b10101010);
-        System.out.println(IntToBit.to8BitBinary(c3));
+        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c3));
 
         int c4 = Encrypt(0b1111111111, 0b1111111111, 0b10101010);
-        System.out.println(IntToBit.to8BitBinary(c4));
+        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c4));
+
+        System.out.println();
 
         int p5 = Decrypt(0b1000101110, 0b0110101110, 0b11100110);
-        System.out.println(IntToBit.to8BitBinary(p5));
+        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p5));
 
         int p6 = Decrypt(0b1011101111, 0b0110101110, 0b01010000);
-        System.out.println(IntToBit.to8BitBinary(p6));
+        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p6));
 
         int p7 = Decrypt(0b0000000000, 0b0000000000, 0b10000000);
-        System.out.println(IntToBit.to8BitBinary(p7));
+        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p7));
 
         int p8 = Decrypt(0b1111111111, 0b1111111111, 0b10010010);
-        System.out.println(IntToBit.to8BitBinary(p8));
+        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p8));
     }
 }
