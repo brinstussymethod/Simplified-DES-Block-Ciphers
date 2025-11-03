@@ -47,6 +47,7 @@ public class MainSDES {
         1000101110     ?                       11000010
         0010011111     ?                       10011101
         0010011111     ?                       10010000
+
          */
         System.out.println("SDES Problems: ");
         int c1 = Encrypt(0b0000000000, 0b00000000);
