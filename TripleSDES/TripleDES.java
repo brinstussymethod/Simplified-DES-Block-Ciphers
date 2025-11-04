@@ -1,22 +1,21 @@
 package TripleSDES;
 import SDES.SDES;
-import tools.IntToBit;
 
 public class TripleDES {
 
-    public static int Encrypt(int key1, int key2, int plaintext) {
+    public static String Encrypt(String plaintext, String key1, String key2) {
         // TripleSDES: Encrypt(K1) -> Decrypt(K2) -> Encrypt(K1)
-        int afterFirstEncrypt = SDES.Encrypt(key1, plaintext);
-        int afterDecrypt = SDES.Decrypt(key2, afterFirstEncrypt);
-        int ciphertext = SDES.Encrypt(key1, afterDecrypt);
+        String afterFirstEncrypt = SDES.Encrypt(plaintext, key1);
+        String afterDecrypt = SDES.Decrypt(afterFirstEncrypt, key2);
+        String ciphertext = SDES.Encrypt(afterDecrypt, key1);
         return ciphertext;
     }
 
-    public static int Decrypt(int key1, int key2, int ciphertext) {
+    public static String Decrypt(String ciphertext, String key1, String key2) {
         // TripleSDES Decrypt: Decrypt(K1) -> Encrypt(K2) -> Decrypt(K1)
-        int afterFirstDecrypt = SDES.Decrypt(key1, ciphertext);
-        int afterEncrypt = SDES.Encrypt(key2, afterFirstDecrypt);
-        int plaintext = SDES.Decrypt(key1, afterEncrypt);
+        String afterFirstDecrypt = SDES.Decrypt(ciphertext, key1);
+        String afterEncrypt = SDES.Encrypt(afterFirstDecrypt, key2);
+        String plaintext = SDES.Decrypt(afterEncrypt, key1);
         return plaintext;
     }
 
@@ -39,30 +38,13 @@ public class TripleDES {
 
         System.out.println("TripleSDES Problems:");
 
-        int c1 = Encrypt(0b0000000000, 0b0000000000, 0b00000000);
-        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c1));
+        // Pass plaintext first, then key1, key2
+        String c1 = Encrypt("00000000", "0000000000", "0000000000");
+        System.out.println("Cyphertext is: " + c1);
 
-        int c2 = Encrypt(0b1000101110, 0b0110101110, 0b11010111);
-        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c2));
+//        // Examples using binary literals converted to strings would be similar:
+//        String c2 = Encrypt("11010111", "1000101110", "0110101110");
+//        System.out.println("Cyphertext is: " + c2);
 
-        int c3 = Encrypt(0b1000101110, 0b0110101110, 0b10101010);
-        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c3));
-
-        int c4 = Encrypt(0b1111111111, 0b1111111111, 0b10101010);
-        System.out.println("Cyphertext is: " + IntToBit.to8BitBinary(c4));
-
-        System.out.println();
-
-        int p5 = Decrypt(0b1000101110, 0b0110101110, 0b11100110);
-        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p5));
-
-        int p6 = Decrypt(0b1011101111, 0b0110101110, 0b01010000);
-        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p6));
-
-        int p7 = Decrypt(0b0000000000, 0b0000000000, 0b10000000);
-        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p7));
-
-        int p8 = Decrypt(0b1111111111, 0b1111111111, 0b10010010);
-        System.out.println("Plaintext is: " + IntToBit.to8BitBinary(p8));
     }
 }
