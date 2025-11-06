@@ -16,12 +16,14 @@ public class AnalyzeMsg1 {
 
         int[] testKeys = {0, 461, 512, 1023}; // Try a few keys
         for (int key : testKeys) {
-            System.out.println("Key " + key + " (" + IntToBit.to10BitBinary(key) + "):");
+            System.out.println("Key " + key + " (" + IntToBit.to10BitBinary(key) + "): ");
             System.out.print("Values: ");
-            for (int i = 0; i < Math.min(64, ciphertext.length()); i += 8) {
+            for (int i = 0; i < 64; i += 8) {
                 String block = ciphertext.substring(i, i + 8);
                 int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                String ctStr = String.format("%8s", Integer.toBinaryString(cipherValue)).replace(' ', '0');
+                String plainStr = SDES.Decrypt(ctStr, String.format("%10s", Integer.toBinaryString(key)).replace(' ', '0'));
+                int plainValue = Integer.parseInt(plainStr, 2);
                 System.out.print(plainValue + " ");
             }
             System.out.println("\n");
@@ -46,11 +48,14 @@ public class AnalyzeMsg1 {
         for (int key = 0; key < 1024 && found < 3; key++) {
             String decrypted = "";
             boolean valid = true;
+            String k = String.format("%10s", Integer.toBinaryString(key)).replace(' ', '0');
 
             for (int i = 0; i < ciphertext.length(); i += 8) {
                 String block = ciphertext.substring(i, i + 8);
                 int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                String ctStr = String.format("%8s", Integer.toBinaryString(cipherValue)).replace(' ', '0');
+                String plainStr = SDES.Decrypt(ctStr, k);
+                int plainValue = Integer.parseInt(plainStr, 2);
 
                 if (plainValue >= minVal && plainValue <= maxVal) {
                     if (casciiMode) {

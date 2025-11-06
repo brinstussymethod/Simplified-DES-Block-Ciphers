@@ -1,5 +1,4 @@
 import SDES.SDES;
-import tools.IntToBit;
 
 public class AnalyzeMsg1Extended {
 
@@ -29,28 +28,28 @@ public class AnalyzeMsg1Extended {
     }
 
     private static void verifySDES() {
-        int[][] tests = {
-            {0b0000000000, 0b10101010, 0b00010001},
-            {0b1110001110, 0b10101010, 0b11001010},
-            {0b1110001110, 0b01010101, 0b01110000},
-            {0b1111111111, 0b10101010, 0b00000100}
+        String[][] tests = {
+            {"0b0000000000", "0b10101010", "0b00010001"},
+            {"0b1110001110", "0b10101010", "0b11001010"},
+            {"0b1110001110", "0b01010101","0b01110000"},
+            {"0b1111111111", "0b10101010", "0b00000100"}
         };
 
         boolean allPassed = true;
-        for (int[] test : tests) {
-            int key = test[0];
-            int plain = test[1];
-            int expectedCipher = test[2];
-            int actualCipher = SDES.Encrypt(key, plain);
+        for (String[] test : tests) {
+            String key = test[0].replace("0b", "");
+            String plain = test[1].replace("0b", "");
+            String expectedCipher = test[2].replace("0b", "");
+            String actualCipher = SDES.Encrypt(plain, key);
 
-            if (actualCipher == expectedCipher) {
-                System.out.println("✓ Key=" + IntToBit.to10BitBinary(key) +
-                                   " Plain=" + IntToBit.to8BitBinary(plain) +
-                                   " Cipher=" + IntToBit.to8BitBinary(actualCipher));
+            if (actualCipher.equals(expectedCipher)) {
+                System.out.println("✓ Key=" + key +
+                                   " Plain=" + plain +
+                                   " Cipher=" + actualCipher);
             } else {
-                System.out.println("✗ FAILED: Key=" + IntToBit.to10BitBinary(key) +
-                                   " Expected=" + IntToBit.to8BitBinary(expectedCipher) +
-                                   " Got=" + IntToBit.to8BitBinary(actualCipher));
+                System.out.println("✗ FAILED: Key=" + key +
+                                   " Expected=" + expectedCipher +
+                                   " Got=" + actualCipher);
                 allPassed = false;
             }
         }
@@ -67,21 +66,24 @@ public class AnalyzeMsg1Extended {
         int found = 0;
 
         for (int key = 0; key < 1024 && found < 3; key++) {
-            String decrypted = "";
+            StringBuilder decrypted = new StringBuilder();
             boolean valid = true;
+            String k = String.format("%10s", Integer.toBinaryString(key)).replace(' ', '0');
 
-            for (int i = 0; i < ciphertext.length(); i += 8) {
+            for (int i = 0; i + 8 <= ciphertext.length(); i += 8) {
                 String block = ciphertext.substring(i, i + 8);
                 int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                String ctStr = String.format("%8s", Integer.toBinaryString(cipherValue)).replace(' ', '0');
+                String plainStr = SDES.Decrypt(ctStr, k);
+                int plainValue = Integer.parseInt(plainStr, 2);
 
                 if (plainValue >= 0 && plainValue <= 52) {
                     if (plainValue <= 25) {
-                        decrypted += (char) ('A' + plainValue);
+                        decrypted.append((char) ('A' + plainValue));
                     } else if (plainValue == 26) {
-                        decrypted += ' ';
+                        decrypted.append(' ');
                     } else {
-                        decrypted += (char) ('a' + (plainValue - 27));
+                        decrypted.append((char) ('a' + (plainValue - 27)));
                     }
                 } else {
                     valid = false;
@@ -91,7 +93,8 @@ public class AnalyzeMsg1Extended {
 
             if (valid) {
                 found++;
-                System.out.println("  Key " + key + ": " + decrypted.substring(0, Math.min(60, decrypted.length())) + "...");
+                String out = decrypted.length() <= 60 ? decrypted.toString() : decrypted.substring(0, 60);
+                System.out.println("  Key " + key + ": " + out + "...");
             }
         }
 
@@ -106,29 +109,32 @@ public class AnalyzeMsg1Extended {
         int found = 0;
 
         for (int key = 0; key < 1024 && found < 3; key++) {
-            String decrypted = "";
+            StringBuilder decrypted = new StringBuilder();
             boolean valid = true;
+            String k = String.format("%10s", Integer.toBinaryString(key)).replace(' ', '0');
 
-            for (int i = 0; i < ciphertext.length(); i += 8) {
+            for (int i = 0; i + 8 <= ciphertext.length(); i += 8) {
                 String block = ciphertext.substring(i, i + 8);
                 int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                String ctStr = String.format("%8s", Integer.toBinaryString(cipherValue)).replace(' ', '0');
+                String plainStr = SDES.Decrypt(ctStr, k);
+                int plainValue = Integer.parseInt(plainStr, 2);
 
                 if (plainValue >= 0 && plainValue <= 31) {
                     if (plainValue <= 25) {
-                        decrypted += (char) ('A' + plainValue);
+                        decrypted.append((char) ('A' + plainValue));
                     } else if (plainValue == 26) {
-                        decrypted += ' ';
+                        decrypted.append(' ');
                     } else if (plainValue == 27) {
-                        decrypted += '.';
+                        decrypted.append('.');
                     } else if (plainValue == 28) {
-                        decrypted += ',';
+                        decrypted.append(',');
                     } else if (plainValue == 29) {
-                        decrypted += '!';
+                        decrypted.append('!');
                     } else if (plainValue == 30) {
-                        decrypted += '?';
+                        decrypted.append('?');
                     } else {
-                        decrypted += '_';  // Unknown
+                        decrypted.append('_');  // Unknown
                     }
                 } else {
                     valid = false;
@@ -138,7 +144,8 @@ public class AnalyzeMsg1Extended {
 
             if (valid) {
                 found++;
-                System.out.println("  Key " + key + ": " + decrypted.substring(0, Math.min(60, decrypted.length())) + "...");
+                String out = decrypted.length() <= 60 ? decrypted.toString() : decrypted.substring(0, 60);
+                System.out.println("  Key " + key + ": " + out + "...");
             }
         }
 
@@ -153,33 +160,39 @@ public class AnalyzeMsg1Extended {
         int found = 0;
 
         for (int key = 0; key < 1024 && found < 5; key++) {
-            String decrypted = "";
+            StringBuilder decrypted = new StringBuilder();
             int validCount = 0;
             int totalCount = 0;
+            String k = String.format("%10s", Integer.toBinaryString(key)).replace(' ', '0');
 
-            for (int i = 0; i < ciphertext.length(); i += 8) {
+            for (int i = 0; i + 8 <= ciphertext.length(); i += 8) {
                 String block = ciphertext.substring(i, i + 8);
                 int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                String ctStr = String.format("%8s", Integer.toBinaryString(cipherValue)).replace(' ', '0');
+                String plainStr = SDES.Decrypt(ctStr, k);
+                int plainValue = Integer.parseInt(plainStr, 2);
                 totalCount++;
 
                 if (plainValue >= 0 && plainValue <= 26) {
                     validCount++;
                     if (plainValue == 26) {
-                        decrypted += ' ';
+                        decrypted.append(' ');
                     } else {
-                        decrypted += (char) ('A' + plainValue);
+                        decrypted.append((char) ('A' + plainValue));
                     }
                 } else {
-                    decrypted += '?';
+                    decrypted.append('?');
                 }
             }
+
+            if (totalCount == 0) continue; // avoid division by zero
 
             double validPercent = (100.0 * validCount) / totalCount;
             if (validPercent >= 90.0) {
                 found++;
+                String out = decrypted.length() <= 60 ? decrypted.toString() : decrypted.substring(0, 60);
                 System.out.println("  Key " + key + " (" + String.format("%.1f", validPercent) + "% valid): " +
-                                   decrypted.substring(0, Math.min(60, decrypted.length())) + "...");
+                                   out + "...");
             }
         }
 
