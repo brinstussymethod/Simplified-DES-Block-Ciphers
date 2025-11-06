@@ -35,9 +35,8 @@ public class TripleDES {
         String p5 = Decrypt("11100110", "1000101110", "0110101110");
         System.out.println("5. Plaintext is: " + p5);
 
-        // Pass plaintext first, then key1, key2
-        String c1 = Encrypt("00000000", "0000000000", "0000000000");
-        System.out.println("Cyphertext is: " + c1);
+        String p6 = Decrypt("01010000", "1011101111", "0110101110");
+        System.out.println("6. Plaintext is: " + p6);
 
 //        // Examples using binary literals converted to strings would be similar:
 //        String c2 = Encrypt("11010111", "1000101110", "0110101110");
