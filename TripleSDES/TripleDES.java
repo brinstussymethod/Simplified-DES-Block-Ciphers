@@ -26,7 +26,8 @@ public class TripleDES {
         String t2 = Encrypt("11010111", "1000101110", "0110101110");
         System.out.println("2. Ciphertext is: " + t2);
 
-        Raw Key 1        Raw Key 2      Plaintext         Ciphertext
+        String t3 = Encrypt("10101010", "1000101110", "0110101110");
+        System.out.println("3. Ciphertext is: " + t3);
 
         String t4 = Encrypt("10101010", "1111111111", "1111111111");
         System.out.println("4. Ciphertext is: " + t4);
