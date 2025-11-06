@@ -38,9 +38,11 @@ public class TripleDES {
         String p6 = Decrypt("01010000", "1011101111", "0110101110");
         System.out.println("6. Plaintext is: " + p6);
 
-//        // Examples using binary literals converted to strings would be similar:
-//        String c2 = Encrypt("11010111", "1000101110", "0110101110");
-//        System.out.println("Cyphertext is: " + c2);
+        String p7 = Decrypt("10000000", "0000000000", "0000000000");
+        System.out.println("7. Plaintext is: " + p7);
+
+        String p8 = Decrypt("10010010", "1111111111", "1111111111");
+        System.out.println("8. Plaintext is: " + p8);
 
     }
 }
