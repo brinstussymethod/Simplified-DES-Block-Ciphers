@@ -21,9 +21,10 @@ public class Part3_1 {
         // Encrypt each character
         for (int i = 0; i < plaintext.length(); i++) {
             char c = plaintext.charAt(i);
-            int cascii = c - 'A';  // CASCII: A=0, B=1, ..., Z=25
-            int ciphertext = SDES.Encrypt(key, cascii);
-            System.out.print(IntToBit.to8BitBinary(ciphertext));
+            int cascii = c - 'A';
+            String casciiStr = Integer.toString(cascii); // numeric string
+            String ciphertext = SDES.Encrypt(key, casciiStr);
+            System.out.print(ciphertext);
         }
 
         System.out.println();
