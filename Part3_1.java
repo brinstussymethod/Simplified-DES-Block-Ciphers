@@ -15,7 +15,7 @@ public class Part3_1 {
 
         System.out.println("Part 3.1: CASCII Encryption");
         System.out.println("Plaintext: " + plaintext);
-        System.out.println("Key: " + IntToBit.to10BitBinary(key));
+        System.out.println("Key: " + key);
         System.out.print("Ciphertext (64 bits): ");
 
         // Encrypt each character
