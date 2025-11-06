@@ -11,7 +11,7 @@ public class Part3_1 {
         */
 
         String plaintext = "CRYPTOGRAPHY";
-        int key = 0b0111001101;
+        String key = "0b0111001101";
 
         System.out.println("Part 3.1: CASCII Encryption");
         System.out.println("Plaintext: " + plaintext);
