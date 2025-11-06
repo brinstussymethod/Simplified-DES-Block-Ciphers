@@ -340,4 +340,50 @@ public class SDES {
         return output;
 
     }
+
+    public static void main(String[] args) {
+        /*
+        Part 2. TripleSDES
+        Implement TripleSDES and use your implementation to complete the following table:
+
+        Raw Key 1        Raw Key 2      Plaintext         Ciphertext
+
+        0000000000     0000000000     00000000         ?
+        1000101110     0110101110     11010111         ?
+        1000101110     0110101110     10101010         ?
+        1111111111     1111111111     10101010         ?
+        1000101110     0110101110     ?                     11100110
+        1011101111     0110101110     ?                     01010000
+        0000000000     0000000000     ?                     10000000
+        1111111111     1111111111     ?                     10010010
+        */
+
+        System.out.println("TripleSDES Problems:");
+
+        // Pass plaintext first, then key1, key2
+        String t1 = Encrypt("00000000", "0000000000", "0000000000");
+        System.out.println("1. Ciphertext is: " + t1);
+
+        String t2 = Encrypt("11010111", "1000101110", "0110101110");
+        System.out.println("2. Ciphertext is: " + t2);
+
+        String t3 = Encrypt("10101010", "1000101110", "0110101110");
+        System.out.println("3. Ciphertext is: " + t3);
+
+        String t4 = Encrypt("10101010", "1111111111", "1111111111");
+        System.out.println("4. Ciphertext is: " + t4);
+
+        String p5 = Decrypt("11100110", "1000101110", "0110101110");
+        System.out.println("5. Plaintext is: " + p5);
+
+        String p6 = Decrypt("01010000", "1011101111", "0110101110");
+        System.out.println("6. Plaintext is: " + p6);
+
+        String p7 = Decrypt("10000000", "0000000000", "0000000000");
+        System.out.println("7. Plaintext is: " + p7);
+
+        String p8 = Decrypt("10010010", "1111111111", "1111111111");
+        System.out.println("8. Plaintext is: " + p8);
+
+    }
 }
