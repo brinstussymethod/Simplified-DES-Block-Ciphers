@@ -125,8 +125,9 @@ public class TryBitReversals {
                 String block = ciphertext.substring(i, i + 7);
                 // Pad to 8 bits for SDES
                 block = "0" + block;
-                int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                String keyBits = IntToBit.to10BitBinary(key);
+                String plainBits = SDES.Decrypt(block, keyBits);
+                int plainValue = Integer.parseInt(plainBits, 2);
 
                 // Check if valid ASCII printable
                 if (plainValue >= 32 && plainValue <= 126) {
