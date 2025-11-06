@@ -167,8 +167,9 @@ public class TryBitReversals {
 
                 for (int i = 0; i < alignedLength; i += 8) {
                     String block = offsetCipher.substring(i, i + 8);
-                    int cipherValue = Integer.parseInt(block, 2);
-                    int plainValue = SDES.Decrypt(key, cipherValue);
+                    String keyBits = IntToBit.to10BitBinary(key);
+                    String plainBits = SDES.Decrypt(block, keyBits);
+                    int plainValue = Integer.parseInt(plainBits, 2);
 
                     // Check if CASCII
                     if (plainValue >= 0 && plainValue <= 26) {
