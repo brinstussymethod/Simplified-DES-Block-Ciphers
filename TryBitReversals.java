@@ -81,8 +81,10 @@ public class TryBitReversals {
 
             for (int i = 0; i < alignedLength; i += 8) {
                 String block = ciphertext.substring(i, i + 8);
-                int cipherValue = Integer.parseInt(block, 2);
-                int plainValue = SDES.Decrypt(key, cipherValue);
+                // Use SDES with string inputs: block is 8-bit ciphertext string, key must be 10-bit string
+                String keyBits = IntToBit.to10BitBinary(key);
+                String plainBits = SDES.Decrypt(block, keyBits);
+                int plainValue = Integer.parseInt(plainBits, 2);
 
                 // Check if CASCII: A=0, B=1, ..., Z=25, plus space (26)
                 if (plainValue >= 0 && plainValue <= 26) {
