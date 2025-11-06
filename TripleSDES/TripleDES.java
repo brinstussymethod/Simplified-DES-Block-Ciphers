@@ -20,9 +20,11 @@ public class TripleDES {
     }
 
     public static void main(String[] args) {
-        /*
-        Part 2. TripleSDES
-        Implement TripleSDES and use your implementation to complete the following table:
+        String t1 = Encrypt("00000000", "0000000000", "0000000000");
+        System.out.println("1. Ciphertext is: " + t1);
+
+        String t2 = Encrypt("11010111", "1000101110", "0110101110");
+        System.out.println("2. Ciphertext is: " + t2);
 
         Raw Key 1        Raw Key 2      Plaintext         Ciphertext
 
