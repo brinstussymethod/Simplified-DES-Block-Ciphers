@@ -32,7 +32,8 @@ public class TripleDES {
         String t4 = Encrypt("10101010", "1111111111", "1111111111");
         System.out.println("4. Ciphertext is: " + t4);
 
-        System.out.println("TripleSDES Problems:");
+        String p5 = Decrypt("11100110", "1000101110", "0110101110");
+        System.out.println("5. Plaintext is: " + p5);
 
         // Pass plaintext first, then key1, key2
         String c1 = Encrypt("00000000", "0000000000", "0000000000");
