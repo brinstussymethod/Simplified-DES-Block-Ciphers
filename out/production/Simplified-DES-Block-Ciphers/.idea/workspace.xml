@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fa3b90bf-6fcb-4118-91bd-da583a2a1fe9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/SDES/MainSDES.java" beforeDir="false" afterPath="$PROJECT_DIR$/SDES/MainSDES.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Simplified-DES-Block-Ciphers/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Simplified-DES-Block-Ciphers/SDES/MainSDES.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Simplified-DES-Block-Ciphers/SDES/MainSDES.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Simplified-DES-Block-Ciphers/TripleSDES/TripleDES.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Simplified-DES-Block-Ciphers/TripleSDES/TripleDES.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="345eXSdHom3nCPiScJvFuCjEgXJ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MainSDES.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SDES.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TripleDES.executor&quot;: &quot;Run&quot;,
+    &quot;Application.bitpractice.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;brian-implementation&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Brian/Documents/CSULA/CS4780/Simplified-DES-Block-Ciphers&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Application.TripleDES">
+    <configuration name="MainSDES" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SDES.MainSDES" />
+      <module name="Simplified-DES-Block-Ciphers" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="SDES.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SDES" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SDES.SDES" />
+      <module name="Simplified-DES-Block-Ciphers" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="SDES.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TripleDES" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="TripleSDES.TripleDES" />
+      <module name="Simplified-DES-Block-Ciphers" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="TripleSDES.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="bitpractice" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="bitpractice" />
+      <module name="Simplified-DES-Block-Ciphers" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.TripleDES" />
+        <item itemvalue="Application.MainSDES" />
+        <item itemvalue="Application.SDES" />
+        <item itemvalue="Application.bitpractice" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fa3b90bf-6fcb-4118-91bd-da583a2a1fe9" name="Changes" comment="" />
+      <created>1760507901484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1760507901484</updated>
+      <workItem from="1760507902669" duration="2148000" />
+      <workItem from="1761775980676" duration="1417000" />
+      <workItem from="1761881299116" duration="8816000" />
+      <workItem from="1762041940429" duration="4694000" />
+      <workItem from="1762149090905" duration="870000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
